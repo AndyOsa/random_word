@@ -1,41 +1,93 @@
 <!DOCTYPE html>
-<html lang="uk">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Випадкове слово</title>
-    <link href="https://fonts.googleapis.com/css2?family=Rubik&display=swap" rel="stylesheet">
+    <title>Random Word</title>
     <style>
         body {
-            font-family: 'Rubik', sans-serif;
-            background: #f0f4f8;
-            color: #333;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-        .container {
-            background: white;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            font-family: Arial, sans-serif;
             text-align: center;
+            margin-top: 50px;
+            background-color: #f8f9fa;
         }
-        h1 {
+        .word {
             font-size: 2em;
             margin-bottom: 20px;
         }
-        .word {
+        .timer {
             font-size: 1.5em;
-            color: #007acc;
+            color: #555;
+            margin-bottom: 20px;
+        }
+        .next-btn {
+            padding: 10px 20px;
+            font-size: 1em;
+            border: none;
+            border-radius: 6px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+        .next-btn:hover {
+            background-color: #0056b3;
+        }
+        .firework {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: transparent;
+            border-radius: 50%;
+            animation: explode 0.8s ease-out forwards;
+        }
+
+        @keyframes explode {
+            0% {
+                opacity: 1;
+                transform: scale(1) translate(0, 0);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(2) translate(var(--x), var(--y));
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Випадкове слово:</h1>
-        <div class="word">{{ word }}</div>
-    </div>
+    <div class="word">Your random word: <strong>{{ word }}</strong></div>
+    <div class="timer">Next word in <span id="countdown">30</span> seconds</div>
+    <button class="next-btn" onclick="location.reload()">Next</button>
+
+    <audio id="sound" src="https://www.soundjay.com/button/beep-07.wav" preload="auto"></audio>
+
+    <script>
+        let seconds = 30;
+        const countdownEl = document.getElementById('countdown');
+        const sound = document.getElementById('sound');
+
+        const timer = setInterval(() => {
+            seconds--;
+            countdownEl.textContent = seconds;
+            if (seconds <= 0) {
+                clearInterval(timer);
+                sound.play();
+                showFireworks();
+                setTimeout(() => location.reload(), 3000);
+            }
+        }, 1000);
+
+        function showFireworks() {
+            for (let i = 0; i < 30; i++) {
+                const fw = document.createElement('div');
+                fw.className = 'firework';
+                fw.style.left = Math.random() * window.innerWidth + 'px';
+                fw.style.top = Math.random() * window.innerHeight + 'px';
+                fw.style.setProperty('--x', `${(Math.random() - 0.5) * 200}px`);
+                fw.style.setProperty('--y', `${(Math.random() - 0.5) * 200}px`);
+                fw.style.background = `hsl(${Math.random() * 360}, 100%, 50%)`;
+                document.body.appendChild(fw);
+                setTimeout(() => fw.remove(), 800);
+            }
+        }
+    </script>
 </body>
 </html>
+
